@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
             fullname: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true
             },
             email: {
                 type: DataTypes.STRING,
@@ -32,27 +31,30 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.ENUM('user', 'admin'),
                 allowNull: false,
                 defaultValue: 'user'
-            } ,
-            password :{
+            },
+            password: {
                 type: DataTypes.STRING,
                 allowNull: false,
             }
         },
         {
-            sequelize ,
-            modelName : "User" ,
-            tableName : 'users' ,
-            timestamps : true ,
-            defaultScope : {
-                attributes : {
-                    exclude :['password'] ;
+            sequelize,
+            modelName: "User",
+            tableName: 'users',
+            timestamps: true,
+            defaultScope: {
+                attributes: {
+                    exclude: ['password']
                 }
             },
-            scopes :{
-                withPassword : {
-                    attributes :{}
+            scopes: {
+                withPassword: {
+                    attributes: {
+                        include: ['password'] 
+                    }
                 }
             }
         }
     )
+    return User
 }
