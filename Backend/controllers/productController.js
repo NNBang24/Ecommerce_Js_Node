@@ -1,9 +1,48 @@
-const { Product , Category } = require('../models');
+const { Product, Category, Sequelize } = require('../models');
 const path = require('path');
 const fs = require('fs');
+const {Op} = require('sequelize')
+
+const priceRanges = {
+    '0-200000': [0, 200000],
+    '200000-500000': [200000, 500000],
+    '500000-700000': [500000, 700000],
+    '700000-1000000': [700000, 1000000],
+    '1000000+': [1000000, null]
+};
+const categoryMap = {
+    'shirt-man': 1,
+    'shirt-women': 2,
+    'sweater': 3,
+    't-shirt': 4
+}
+
+function buildWhere(price, category , highlight) {
+    let where = {};
+    if (categoryMap[category]) {
+        where.categoryId = categoryMap[category];
+    }
+    if (highlight === 'true') {
+        where.tags = {[Op.like] :['%noi bat%']}
+    }
+    if (priceRanges[price]) {
+        const [min, max] = priceRanges[price];
+        where[Op.or] = [
+            { price: max ? { [Op.between]: [min, max] } : { [Op.gt]: min } },
+            { priceSale: max ? { [Op.between]: [min, max] } : { [Op.gt]: min } }
+        ]
+    }
+    return where ;
+}
 exports.getAllProducts = async (req, res, next) => {
     try {
-        const products = await Product.findAll({
+        const { category, price ,highlight , page = 1,limit = 5   } = req.query ;
+        const where = buildWhere(price , category ,highlight) ;
+        const offset =(page - 1 ) * limit ; 
+        const {rows , count} = await Product.findAndCountAll({
+            where,
+            limit : Number(limit) ,
+            offset : Number(offset) ,
             include: [
                 {
                     model: Category,
@@ -11,7 +50,12 @@ exports.getAllProducts = async (req, res, next) => {
                 }
             ]
         });
-        res.json(products);
+        res.json({
+            total : count ,
+            totalPage : Math.ceil(count/limit) ,
+            currentPage : Number(page) ,
+            products : rows 
+        });
     } catch (error) {
         next(error);
     }
@@ -19,10 +63,10 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
     try {
-     
+
         const { name, description, price, priceSale, imageURL, sizes, tags, categoryId } = req.body;
         const processedImage = req.file ? req.file.processedFileName : null;
-        
+
         const newProduct = await Product.create({
             name,
             description,
@@ -41,7 +85,7 @@ exports.createProduct = async (req, res, next) => {
         next(error)
     }
 }
-exports.updateProduct = async ( req , res , next) => {
+exports.updateProduct = async (req, res, next) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
@@ -61,11 +105,11 @@ exports.updateProduct = async ( req , res , next) => {
         };
 
         if (processedImage) {
-            if(product.imageURL) {
-                const oldImagePath = path.join(__dirname , '../public/uploads' , product.imageURL) ;
-                fs.unlink(oldImagePath ,(err) => {
-                    if(err) console.log('loi xoa anh cu' ,err.message)
-                }) 
+            if (product.imageURL) {
+                const oldImagePath = path.join(__dirname, '../public/uploads', product.imageURL);
+                fs.unlink(oldImagePath, (err) => {
+                    if (err) console.log('loi xoa anh cu', err.message)
+                })
 
             }
             updateData.imageURL = processedImage;
@@ -73,28 +117,28 @@ exports.updateProduct = async ( req , res , next) => {
 
         const [updatedRows] = await Product.update(updateData, {
             where: {
-                id :req.params.id 
+                id: req.params.id
             }
         });
 
         if (updatedRows === 0) {
             return res.status(404).json({ message: 'Khong tim thay san pham' });
         }
-        res.json({ message: 'Cap nhat san pham thanh cong' , data : product});
+        res.json({ message: 'Cap nhat san pham thanh cong', data: product });
     } catch (error) {
         next(error);
     }
 };
 
-exports.deleteProduct = async(req, res , next) => {
+exports.deleteProduct = async (req, res, next) => {
     try {
-        const deleteRows = await Product.destroy({where : {id : req.params.id}}) ;
-        if(deleteRows === 0) {
+        const deleteRows = await Product.destroy({ where: { id: req.params.id } });
+        if (deleteRows === 0) {
             return res.status(404).json({ message: 'Khong tim thay san pham' });
         }
         res.status(204).send()
     } catch (error) {
-        next(error); 
+        next(error);
     }
 }
 

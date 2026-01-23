@@ -1,5 +1,5 @@
 import { imagesList } from './products.data.js';
-
+import {ENV} from './config.js'
 let filterProducts = [];
 //
 const openPopup = document.querySelector(".open-popup");
@@ -118,44 +118,38 @@ navigationRight.addEventListener('click', navigationRightButton)
 const loadMoreBtn = document.querySelector('#load-more-btn');
 const productMainShirt = document.querySelector('.product-shirt-main')
 
-let currentDisplay = 6;
 
 
 
-function renderProduct(container, start, end) {
-  const showProduct = filterProducts.slice(start, end)
-  showProduct.forEach(item => {
+function renderProduct(container, products) {
+  products.forEach(item => {
+
+    if (!item.tags || !item.tags.includes('noi bat')) return;
+
     const divEl = document.createElement('div');
     divEl.classList.add('product-main');
-    // hien thi sale 
+
     let saleHTML = '';
-    if (item.tags) {
-      if (item.tags && item.tags.includes('sale 30%')) {
-        saleHTML = `<div class="sale">sale 30%</div>`;
-      } else if (item.tags && item.tags.includes('sale 40%')) {
-        saleHTML = `<div class="sale">sale 40%</div>`;
-      }
+    if (item.tags.includes('sale 30%')) {
+      saleHTML = `<div class="sale">sale 30%</div>`;
+    } else if (item.tags.includes('sale 40%')) {
+      saleHTML = `<div class="sale">sale 40%</div>`;
     }
-    // hien thi gia ca 
-    let priceHTML = ` <p>${item.price.toLocaleString('vi-VN')}đ</p>`
-    if (item.priceSale > 0 && item.priceSale < item.price ) {
+
+    let priceHTML = `<p>${item.price.toLocaleString('vi-VN')}đ</p>`;
+    if (item.priceSale > 0 && item.priceSale < item.price) {
       priceHTML = `
-      <p>${item.priceSale.toLocaleString('vi-VN')}đ</p>
-      <p class="sale-m">${item.price.toLocaleString('vi-VN')}đ</p>
-      `
+        <p>${item.priceSale.toLocaleString('vi-VN')}đ</p>
+        <p class="sale-m">${item.price.toLocaleString('vi-VN')}đ</p>
+      `;
     }
-    // hien thi san pham noi  bat 
-    let outSandHTML = '';
-    if (item.tags && item.tags.includes('noi bat')) {
-      outSandHTML  = ` <img src="http://localhost:3000/uploads/${item.imageURL}" alt="${item.name}">`
-    }
-    else {
-      return;
-    }
+
+    const outSandHTML = `<img src="http://localhost:3000/uploads/${item.imageURL}" alt="${item.name}">`;
+
     divEl.innerHTML = `
       <div class="img_hidden">
         <a href="product-detail.html?id=${item.id}" class="img_box">
-         ${outSandHTML }
+          ${outSandHTML}
           <div class="product_overlay"></div>
           ${saleHTML}
         </a>
@@ -168,34 +162,32 @@ function renderProduct(container, start, end) {
 
     container.appendChild(divEl);
   });
-  if (end >= filterProducts.length) {
-    loadMoreBtn.classList.add('hidden')
-  }
 }
 
-const fetchProduct = async () => {
-  const res = await fetch('http://localhost:3000/api/product');
-  const products = await res.json();
+let page = 1;
+const limit = 4;
 
-  // console.log(products); 
 
-  // products = result.data || result; 
-  if (!Array.isArray(products)) {
-    console.error("API khong tra ve mang san pham");
-    return;
+async function fetchProduct() {
+  const res = await fetch(`${ENV.API_URL}/api/product?highlight=true&page=${page}&limit=${limit}`);
+  const result = await res.json();
+
+  const products = result.products;
+  if (!Array.isArray(products)) return;
+
+  renderProduct(productMainShirt, products);
+
+  // nếu hết trang thì ẩn nút
+  if (page >= result.totalPage) {
+    loadMoreBtn.classList.add('hidden');
   }
-
-  filterProducts = products.filter(item => { return item.tags && item.tags.includes('noi bat') }) ;
-
-  renderProduct(productMainShirt, 0, 6);
-};
+}
 
 
 
 loadMoreBtn.addEventListener("click", () => {
-  const prevDisplay = currentDisplay;
-  currentDisplay += 8
-  renderProduct(productMainShirt  , prevDisplay, currentDisplay);
+  page++;          
+  fetchProduct()
   // loadMoreBtn.classList.add('hidden')
 });
 

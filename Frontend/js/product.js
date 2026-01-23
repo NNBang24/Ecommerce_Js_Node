@@ -276,7 +276,7 @@ priceFilter.addEventListener('change', () => {
     loadMoreBtn.classList.add('hidden')
   }
   else if (priceValue === '1000000+') {
-    const price5 = products.filter(item => {
+    const price5 = products.filter(item => {  
       const price = item.priceSale || item.price;
       return price > 1000000
     })
