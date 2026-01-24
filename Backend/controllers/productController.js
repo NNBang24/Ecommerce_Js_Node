@@ -1,14 +1,13 @@
 const { Product, Category, Sequelize } = require('../models');
 const path = require('path');
 const fs = require('fs');
-const {Op} = require('sequelize')
+const { Op } = require('sequelize')
 
 const priceRanges = {
     '0-200000': [0, 200000],
     '200000-500000': [200000, 500000],
     '500000-700000': [500000, 700000],
-    '700000-1000000': [700000, 1000000],
-    '1000000+': [1000000, null]
+    '700000-1000000': [700000, 1000000]
 };
 const categoryMap = {
     'shirt-man': 1,
@@ -17,32 +16,44 @@ const categoryMap = {
     't-shirt': 4
 }
 
-function buildWhere(price, category , highlight) {
+function buildWhere(price, category, highlight) {
     let where = {};
     if (categoryMap[category]) {
         where.categoryId = categoryMap[category];
     }
     if (highlight === 'true') {
-        where.tags = {[Op.like] :['%noi bat%']}
+        where.tags = { [Op.like]: ['%noi bat%'] }
     }
     if (priceRanges[price]) {
         const [min, max] = priceRanges[price];
         where[Op.or] = [
-            { price: max ? { [Op.between]: [min, max] } : { [Op.gt]: min } },
-            { priceSale: max ? { [Op.between]: [min, max] } : { [Op.gt]: min } }
-        ]
+            // Trường hợp không sale: dùng price
+            {
+                [Op.and]: [
+                    { priceSale: 0 },
+                    { price: max ? { [Op.between]: [min, max] } : { [Op.gt]: min } }
+                ]
+            },
+            // Trường hợp có sale: dùng priceSale
+            {
+                [Op.and]: [
+                    { priceSale: { [Op.gt]: 0 } },
+                    { priceSale: max ? { [Op.between]: [min, max] } : { [Op.gt]: min } }
+                ]
+            }
+        ];
     }
-    return where ;
+    return where;
 }
 exports.getAllProducts = async (req, res, next) => {
     try {
-        const { category, price ,highlight , page = 1,limit = 5   } = req.query ;
-        const where = buildWhere(price , category ,highlight) ;
-        const offset =(page - 1 ) * limit ; 
-        const {rows , count} = await Product.findAndCountAll({
+        const { category, price, highlight, page = 1, limit = 5 } = req.query;
+        const where = buildWhere(price, category, highlight);
+        const offset = (page - 1) * limit;
+        const { rows, count } = await Product.findAndCountAll({
             where,
-            limit : Number(limit) ,
-            offset : Number(offset) ,
+            limit: Number(limit),
+            offset: Number(offset),
             include: [
                 {
                     model: Category,
@@ -51,10 +62,10 @@ exports.getAllProducts = async (req, res, next) => {
             ]
         });
         res.json({
-            total : count ,
-            totalPage : Math.ceil(count/limit) ,
-            currentPage : Number(page) ,
-            products : rows 
+            total: count,
+            totalPage: Math.ceil(count / limit),
+            currentPage: Number(page),
+            products: rows
         });
     } catch (error) {
         next(error);

@@ -103,6 +103,7 @@ function renderProduct(container, products) {
   });
 }
 let currentCategory = 'all';
+let currentPrice = 'all'
 let page = 1;
 const limit = 4;
 
@@ -112,6 +113,9 @@ async function fetchProduct() {
 
   if (currentCategory !== 'all') {
     url += `&category=${currentCategory}`;
+  }
+  if (currentPrice !== 'all') {
+    url += `&price=${currentPrice}`
   }
 
   const res = await fetch(url);
@@ -143,10 +147,18 @@ selectDrop.addEventListener("change", async() => {
   page = 1 ;
   productMainShirtPage.innerHTML = '' ;
   fetchProduct()
-  
-
-
 });
+
+// click loc gia san pham 
+
+const priceFilter = document.getElementById('price-filter');
+priceFilter.addEventListener('change',async () => {
+  currentPrice = priceFilter.value;
+  page = 1 ;
+  productMainShirtPage.innerHTML = '' ;
+  fetchProduct()
+
+})
 
 
 // 
@@ -180,57 +192,7 @@ inputFind.addEventListener('keydown', (event) => {
 
 
 
-// loc gia san pham 
 
-const priceFilter = document.getElementById('price-filter');
-priceFilter.addEventListener('change', () => {
-  const priceValue = priceFilter.value;
-  if (priceValue === '0-200000') {
-    const price1 = products.filter(item => {
-      const price = item.priceSale || item.price;
-      return price > 0 && price <= 200000
-    })
-    renderProductList(productMainShirtPage, price1)
-    loadMoreBtn.classList.add('hidden')
-
-  }
-  else if (priceValue === '200000-500000') {
-    const price2 = products.filter(item => {
-      const price = item.priceSale || item.price;
-      return price > 200000 && price <= 500000
-    })
-    renderProductList(productMainShirtPage, price2)
-    loadMoreBtn.classList.add('hidden')
-  }
-  else if (priceValue === '500000-700000') {
-    const price3 = products.filter(item => {
-      const price = item.priceSale || item.price;
-      return price > 500000 && price <= 700000
-    })
-    renderProductList(productMainShirtPage, price3)
-    loadMoreBtn.classList.add('hidden')
-  }
-  else if (priceValue === '700000-1000000') {
-    const price4 = products.filter(item => {
-      const price = item.priceSale || item.price;
-      return price > 700000 && price <= 1000000
-    })
-    renderProductList(productMainShirtPage, price4)
-    loadMoreBtn.classList.add('hidden')
-  }
-  else if (priceValue === '1000000+') {
-    const price5 = products.filter(item => {  
-      const price = item.priceSale || item.price;
-      return price > 1000000
-    })
-    renderProductList(productMainShirtPage, price5)
-    loadMoreBtn.classList.add('hidden')
-  }
-  else {
-    renderProduct(productMainShirtPage, 0, currentDisplay)
-    loadMoreBtn.classList.remove('hidden')
-  }
-})
 
 // gia giam dan 
 
