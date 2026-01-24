@@ -1,5 +1,5 @@
 // import { imagesList, products } from './products.data.js';
-
+import { ENV } from './config.js'
 //
 const openPopup = document.querySelector(".open-popup");
 const navigationPopup = document.querySelector(".navigation-popup");
@@ -60,36 +60,35 @@ let currentDisplay = 8;
 
 let products = [];
 // hien thij ta ca san pham 
-function renderProduct(container, start, end , isLoadMore = false) {
-  if (!isLoadMore) {
-    container.innerHTML = ''; // chỉ xoá khi KHÔNG phải load more
-  }
-  const showProduct = products.slice(start, end);
-  showProduct.forEach(item => {
+function renderProduct(container, products) {
+  products.forEach(item => {
+
+    // if (!item.tags || !item.tags.includes('noi bat')) return;
+
     const divEl = document.createElement('div');
     divEl.classList.add('product-main');
-    // hien thi sale 
+
     let saleHTML = '';
-    if (item.tags) {
-      if (item.tags && item.tags.includes('sale 30%')) {
-        saleHTML = `<div class="sale">sale 30%</div>`;
-      } else if (item.tags && item.tags.includes('sale 40%')) {
-        saleHTML = `<div class="sale">sale 40%</div>`;
-      }
+    if (item.tags.includes('sale 30%')) {
+      saleHTML = `<div class="sale">sale 30%</div>`;
+    } else if (item.tags.includes('sale 40%')) {
+      saleHTML = `<div class="sale">sale 40%</div>`;
     }
-    // hien thi gia ca 
-    let priceHTML = ` <p>${item.price.toLocaleString('vi-VN')}đ</p>`
+
+    let priceHTML = `<p>${item.price.toLocaleString('vi-VN')}đ</p>`;
     if (item.priceSale > 0 && item.priceSale < item.price) {
       priceHTML = `
-      <p>${item.priceSale.toLocaleString('vi-VN')}đ</p>
-      <p class="sale-m">${item.price.toLocaleString('vi-VN')}đ</p>
-      `
-
+        <p>${item.priceSale.toLocaleString('vi-VN')}đ</p>
+        <p class="sale-m">${item.price.toLocaleString('vi-VN')}đ</p>
+      `;
     }
+
+    const outSandHTML = `<img src="http://localhost:3000/uploads/${item.imageURL}" alt="${item.name}">`;
+
     divEl.innerHTML = `
       <div class="img_hidden">
         <a href="product-detail.html?id=${item.id}" class="img_box">
-          <img src="http://localhost:3000/uploads/${item.imageURL}" alt="${item.name}">
+          ${outSandHTML}
           <div class="product_overlay"></div>
           ${saleHTML}
         </a>
@@ -103,102 +102,52 @@ function renderProduct(container, start, end , isLoadMore = false) {
     container.appendChild(divEl);
   });
 }
+let currentCategory = 'all';
+let page = 1;
+const limit = 4;
 
-const fetchProduct = async () => {
-  const res = await fetch('http://localhost:3000/api/product');
-  products = await res.json();
 
-  // console.log(products);
-  if (!Array.isArray(products)) {
-    console.error("API khong tra ve mang san pham");
-    return;
+async function fetchProduct() {
+  let url = `${ENV.API_URL}/api/product?page=${page}&limit=${limit}`;
+
+  if (currentCategory !== 'all') {
+    url += `&category=${currentCategory}`;
   }
 
-  renderProduct(productMainShirtPage, 0, currentDisplay, false);
+  const res = await fetch(url);
+  const result = await res.json();
+
+  renderProduct(productMainShirtPage, result.products);
+
+  if (page >= result.totalPage) {
+    loadMoreBtn.classList.add('hidden');
+  } else {
+    loadMoreBtn.classList.remove('hidden');
+  }
 }
-// hien thi san pham trang product
 
 
-// hien thi san pham la khi click nu hoac nam 
-function renderProductList(container, list) {
-  container.innerHTML = '';
-  list.forEach(item => {
-    const divEl = document.createElement('div');
-    divEl.classList.add('product-main');
-    // hien thi sale 
-    let saleHTML = '';
-    if (item.tags) {
-      if (item.tags && item.tags.includes('sale 30%')) {
-        saleHTML = `<div class="sale">sale 30%</div>`;
-      } else if (item.tags && item.tags.includes('sale 40%')) {
-        saleHTML = `<div class="sale">sale 40%</div>`;
-      }
-    }
-    // hien thi gia ca 
-    let priceHTML = ` <p>${item.price.toLocaleString('vi-VN')}đ</p>`
-    if (item.priceSale>0 && item.priceSale < item.price) {
-      priceHTML = `
-      <p>${item.priceSale.toLocaleString('vi-VN')}đ</p>
-      <p class="sale-m">${item.price.toLocaleString('vi-VN')}đ</p>
-      `
 
-    }
-    divEl.innerHTML = `
-      <div class="img_hidden">
-        <a href="product-detail.html?id=${item.id}" class="img_box">
-           <img src="http://localhost:3000/uploads/${item.imageURL}" alt="${item.name}">
-          <div class="product_overlay"></div>
-          ${saleHTML}
-        </a>
-      </div>
-      <a href="product-detail.html?id=${item.id}" class="product_name">${item.name}</a>
-      <div class="money_sale">
-        ${priceHTML}
-      </div>
-    `;
-    container.appendChild(divEl);
-  })
-}
+loadMoreBtn.addEventListener("click", () => {
+  page++;
+  fetchProduct()
+  // loadMoreBtn.classList.add('hidden')
+});
+
+
 
 const selectDrop = document.querySelector('#select-drop')
 // clik change loc Danh muc 
-selectDrop.addEventListener("change", () => {
-  const selectValue = selectDrop.value;
-  if (selectValue === 'shirt-man') {
-    const shirtMen = products.filter(item => {
-      return item.category.name.includes('SHIRT MEN')
-    })
-    renderProductList(productMainShirtPage, shirtMen);
-
-  }
-  else if (selectValue === 'shirt-women') {
-    const shirtWomen = products.filter(item => {
-      return item.category.name.includes('SHIRT WOMEN')
-    })
-    renderProductList(productMainShirtPage, shirtWomen)
-  }
-  else if (selectValue === 'sweater') {
-    const sweater = products.filter(item => {
-      return item.category.name.includes('SWEATER')
-    })
-    renderProductList(productMainShirtPage, sweater)
-  }
-  else if (selectValue === 't-shirt') {
-    const shirt = products.filter(item => {
-      return item.category.name.includes('T SHIRT')
-    })
-    renderProductList(productMainShirtPage, shirt)
-  }
-  else {
-    renderProduct(productMainShirtPage, 0, currentDisplay ,false
-
-    ) ;
-    loadMoreBtn.classList.remove('hidden'); 
-  }
-  loadMoreBtn.classList.add('hidden');
+selectDrop.addEventListener("change", async() => {
+  currentCategory = selectDrop.value;
+  page = 1 ;
+  productMainShirtPage.innerHTML = '' ;
+  fetchProduct()
+  
 
 
 });
+
 
 // 
 const inputDrop = document.querySelector('.input-drop');
@@ -230,12 +179,6 @@ inputFind.addEventListener('keydown', (event) => {
 });
 
 
-
-// click remove mat nut hien thi them
-loadMoreBtn.addEventListener("click", () => {
-  renderProduct(productMainShirtPage, currentDisplay, products.length ,true);
-  loadMoreBtn.classList.add('hidden')
-});
 
 // loc gia san pham 
 
