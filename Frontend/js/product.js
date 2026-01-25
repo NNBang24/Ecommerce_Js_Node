@@ -56,7 +56,7 @@ closeInputFind.addEventListener('blur', () => {
 
 const loadMoreBtn = document.querySelector('#load-more-btn');
 const productMainShirtPage = document.querySelector('.product-shirt-main-page')
-let currentDisplay = 8;
+
 
 let products = [];
 // hien thij ta ca san pham 

@@ -71,7 +71,26 @@ exports.getAllProducts = async (req, res, next) => {
         next(error);
     }
 };
+exports.getProductId = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByPk(id, {
+            include: [
+                {
+                    model: Category,
+                    as: "category"
+                }
+            ]
+        })
+        if (!product) {
+            return res.status(404).json({ message: 'khong tim thay san pham' });
+        }
 
+        res.json(product);
+    } catch (error) {
+        next(error);
+    }
+}
 exports.createProduct = async (req, res, next) => {
     try {
 

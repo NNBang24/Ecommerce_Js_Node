@@ -8,16 +8,9 @@
 
     <link rel="stylesheet" href="css/general.css" />
     <link rel="stylesheet" href="css/index.css" />
-    <link rel="stylesheet" href="css/cart.css">
+    <link rel="stylesheet" href="css/product-detail.css">
     <link rel="stylesheet" href="css/queries.css" />
-    <link rel="stylesheet" href="css/responsive.cart.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-        rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive.product.detail.css">
 
     <title>Document</title>
 </head>
@@ -116,7 +109,6 @@
                         </button>
 
                     </a>
-
                     <button class="btn-my-account">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -124,7 +116,6 @@
                                 d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                         </svg>
                     </button>
-
                     <div class="input-button-find">
                         <!-- <div class="img-banner-overlod-input"></div> -->
                         <input type="text" name="nhap" id="find" class="input-find hidden"
@@ -144,73 +135,65 @@
         </section>
     </header>
     <main>
-        <section class="cart-row">
-            <!-- <div class="cart-page-layout">
-                <div class="cart-page_head">
-                    <h1>Giỏ hàng của bạn</h1>
-                    <p>Hiện đang có .. sản phẩm</p>
+        <section class="detail-main">
+            <!-- <div class="img-detail">
+                <img src="images/shirt2.jpg" alt="">
+                <div class="product_overlay_detail"></div>
+            </div>
+            <div class="content-product">
+                <p class="name-detail">SHIRT MEN 1</p>
+                <p class="price-detail">300.000 VND</p>
+                <div class="size-detail-drop">
+                    <select name="" id="select-drop-size">
+                        <option value="S">Size S</option>
+                        <option value="M">Size M</option>
+                        <option value="L">Size L</option>
+                        <option value="XL">Size Xl</option>
+                    </select>
                 </div>
-                <div class="cartformpage">
-                    <div class="head-cart">
-                        <div class="content-item">
-                            <span>Sản phẩm</span>
-                        </div>
-                        <div class="quantity-item">
-                            <span>Số lượng</span>
-                        </div>
-                        <div class="price-item">
-                            <span class="span-price-cart">Số Tiền</span>
-                        </div>
-                    </div>
-                    <div class="content-cart">
-                        <div class="content-cart-page">
-                            <div class="content-item img-cart">
-                                <img src="images/shirt10.jpg" alt="">
-
-                                <div class="content-cart-product">
-                                    <p>Mã sản phẩm : 1</p>
-                                    <h1>shirt men 1</h1>
-                                    <button class="button-cart-remove">Remove</button>
-                                </div>
-                            </div>
-                            <div class="quantity-item">
-                                <input type="number" class="quantity-cart" name="quantity" min="1">
-                            </div>
-                            <div class="price-item price-cart ">
-                                <span>100.000 đ</span>
-                            </div>
-                        </div>
-                        <div class="content-cart-page">
-                            <div class="content-item img-cart">
-                                <img src="images/shirt10.jpg" alt="">
-
-                                <div class="content-cart-product">
-                                    <p>Mã sản phẩm : 1</p>
-                                    <h1>shirt men 1</h1>
-                                    <button class="button-cart-remove">Remove</button>
-                                </div>
-                            </div>
-                            <div class="quantity-item">
-                                <input type="number" class="quantity-cart" name="quantity" min="1">
-                            </div>
-                            <div class="price-item price-cart ">
-                                <span>100.000 đ</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="total-cart">
-                        <span>Tổng tiền :</span>
-                        <p class="total-price">1.000.000 đ</p>
-                    </div>
-                    <div class="checkout-cart">
-                        <p class="price-shop-continue">Tiếp tục mua sắm</p>
-                        <button class="button-checkout-cart">Thanh toán sản phẩm</button>
-                    </div>
+                <p class="thanh-chan"></p>
+                <div class="input-detail-product">
+                    <label for="" class="content-sl">Số Lượng</label>
+                    <span class="span-detail">-</span>
+                    <input type="number" id="quantity-detail" name="quantity" min="1" value="1">
+                    <span class="span-detail">+</span>
                 </div>
-
+                <button class="button-detail">Add to cart</button>
+                <p class="thanh-chan"></p>
+                <div class="mo-to-product">
+                    <p class="mo-ta">Mô tả</p>
+                    <ul class="description-detail">
+                        <li>Ao so mi tay dai mau xam</li>
+                    </ul>
+                </div>
             </div> -->
         </section>
+        <div class="prduct-tuong-tu">
+            <p>Sản phẩm tương tự</p>
 
+        </div>
+        <section class="product-shirt-same">
+            <div class="product-shirt-main-same">
+                <!-- <div class="product-main">
+                    <div class="img_hidden">
+                        <a href="" class="img_box">
+                            <img src="images/shirt1.jpg" alt="shirt1" />
+                            <div class="product_overlay"></div>
+                            <div class="sale">sale 30%</div>
+                        </a>
+                    </div>
+                    <a href="" class="product_name">shirt men 1</a>
+                    <div class="money_sale">
+                        <p>500,000đ</p>
+                        <p class="sale-m">700,000đđ</p>
+                    </div>
+                </div> -->
+            </div>
+            <div class="load-more">
+                <button id="load-more-btn">Hiển thị thêm</button>
+            </div>
+            </div>
+        </section>
     </main>
     <footer>
         <div class="bottom-menu-container">
@@ -245,7 +228,7 @@
             </div>
         </div>
     </footer>
-    <script type="module" src="js/cart.js"></script>
+    <script type="module" src="js/product-detail.js"></script>
 </body>
 
 </html>
