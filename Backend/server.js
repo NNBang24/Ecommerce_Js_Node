@@ -10,6 +10,7 @@ const userRouter = require('./routers/userRouter') ;
 const categoryRouter = require('./routers/categoryRouter') ;
 const productRouter = require('./routers/productRouter') ;
 const cartRouter = require('./routers/cartRouter') ;
+const historyRouter = require('./routers/historyOderRouter')
 const db = require('./models') ;
 const POST = 3000 ;
 
@@ -24,7 +25,8 @@ app.use(express.json())
 app.use('/api/auth' , userRouter)
 app.use('/api/category' , categoryRouter) ;
 app.use('/api/product', productRouter) ;
-app.use('/api/cart' ,cartRouter)
+app.use('/api/cart' ,cartRouter) ;
+app.use('/api/historyOrder' , historyRouter) ;
 app.use(errorHandlerMiddleware)
 db.sequelize.authenticate()
 .then(() => {

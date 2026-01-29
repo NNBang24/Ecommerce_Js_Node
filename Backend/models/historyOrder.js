@@ -1,44 +1,61 @@
-'use strict' ;
-const { Model, DataTypes } = require('sequelize') ;
+'use strict';
+const { Model, DataTypes } = require('sequelize');
 
-module.exports = (sequelize , DataTypes) => {
+module.exports = (sequelize, DataTypes) => {
     class HistoryOrder extends Model {
         static associate(models) {
-            HistoryOrder.belongsTo(models.User ,{
-                foreignKey : 'userId' ,
-                as : 'user'
-            }) ;
+            HistoryOrder.belongsTo(models.User, {
+                foreignKey: 'userId',
+                as: 'user'
+            });
             HistoryOrder.hasMany(models.OrderItem, {
                 foreignKey: 'orderId',
                 as: 'orderItems'
             });
         }
     }
-    HistoryOrder.init ( 
+
+    HistoryOrder.init(
         {
-            userId : {
+            userId: {
                 type: DataTypes.INTEGER,
-            },
-            totalPrice : {
-                type: DataTypes.DECIMAL(10, 2),
-                defaultValue: 0,
-            } ,
-            orderStatus : {
-                type: DataTypes.ENUM("Đang chờ xử lý", "Đã giao hàng", "Hoàn thành"),
-                allowNull: false,
-                defaultValue: "Đang chờ xử lý"
-            },
-            shippingAddress : {
-                type: DataTypes.TEXT,
+                allowNull: false
             },
 
+            receiverName: {
+                type: DataTypes.STRING(100)
+            },
+
+            phone: {
+                type: DataTypes.STRING(20)
+            },
+
+            email: {
+                type: DataTypes.STRING(100)
+            },
+
+            shippingAddress: {
+                type: DataTypes.TEXT,
+                allowNull: false
+            },
+
+            totalPrice: {
+                type: DataTypes.DECIMAL(12, 2),
+                allowNull: false
+            },
+
+            orderStatus: {
+                type: DataTypes.ENUM("Đang chờ xử lý", "Đã giao hàng", "Hoàn thành"),
+                defaultValue: "Đang chờ xử lý"
+            }
         },
         {
-            sequelize , 
-            modelName: "HistoryOrder" ,
-            tableName: 'historyOrders' ,
-            timestamps : true
+            sequelize,
+            modelName: "HistoryOrder",
+            tableName: "historyOrders",
+            timestamps: true
         }
-    )
+    );
+
     return HistoryOrder;
-}
+};
