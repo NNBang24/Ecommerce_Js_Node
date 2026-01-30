@@ -9,7 +9,14 @@ const sequelize = new Sequelize(
     config.database,
     config.username,
     config.password,
-    config
+    {
+        ...config,
+        timezone: '+07:00', // Ép buộc Sequelize dùng múi giờ Việt Nam
+        dialectOptions: {
+            dateStrings: true, // Không tự động chuyển đổi định dạng ngày
+            typeCast: true     // Giúp MySQL trả về đúng kiểu dữ liệu
+        }
+    }
 );
 db.Cart = require('./cart')(sequelize, Sequelize.DataTypes);
 db.Category = require('./category')(sequelize, Sequelize.DataTypes);
